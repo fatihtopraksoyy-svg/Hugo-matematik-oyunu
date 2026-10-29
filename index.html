@@ -1,75 +1,9 @@
-
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hugo Açı Treni</title>
-<style>
-body{margin:0;font-family:Arial;background:linear-gradient(#b7eaff,#e7f9e8);text-align:center;color:#173b54}
-h1{margin:16px 0 5px}
-#score{font-weight:bold;font-size:21px}
-#question{background:white;border-radius:16px;padding:15px;margin:15px auto;max-width:350px;font-size:23px;font-weight:bold}
-#scene{height:310px;position:relative;overflow:hidden;background:linear-gradient(#c6f0ff 65%,#80c775 65%);border-radius:20px;margin:10px}
-.track{position:absolute;left:50%;top:65px;width:7px;height:260px;background:#555;transform-origin:top center;border:2px dashed white}
-#train{position:absolute;top:25px;left:calc(50% - 27px);font-size:48px;transition:transform .8s}
-#message{font-size:22px;font-weight:bold;min-height:30px}
-.buttons{display:flex;gap:8px;margin:15px 10px}
-button{flex:1;border:0;border-radius:14px;background:#fff;padding:16px 4px;font-size:17px;font-weight:bold;box-shadow:0 3px 8px #aaa;cursor:pointer}
-button:active{background:#a6edbf}
-#next{background:#ffdc72}
-</style>
-</head>
-<body>
-<h1>🚂 HUGO AÇI TRENİ</h1>
-<div id="score">⭐ Puan: 0</div>
-<div id="question">Soru yükleniyor...</div>
-<div id="scene">
-<div class="track" style="transform:rotate(35deg)"></div>
-<div class="track" style="transform:rotate(0deg)"></div>
-<div class="track" style="transform:rotate(-35deg)"></div>
-<div id="train">🚂</div>
-</div>
-<div class="buttons">
-<button onclick="answer(0)">📐 Dar Açı</button>
-<button onclick="answer(1)">📏 Dik Açı</button>
-<button onclick="answer(2)">📐 Geniş Açı</button>
-</div>
-<div id="message"></div>
-<button id="next" onclick="newQuestion()">Yeni Soru ↻</button>
-<script>
-let score=0;
-let correct=0;
-let locked=false;
-let timer=null;
-const names=["Dar Açı","Dik Açı","Geniş Açı"];
-const angles=[[20,35,45,60,75],[90],[105,120,135,150,165]];
-function newQuestion(){
-clearTimeout(timer);
-locked=false;
-document.getElementById("train").style.transform="translate(0,0) rotate(0deg)";
-document.getElementById("message").textContent="";
-correct=Math.floor(Math.random()*3);
-let arr=angles[correct];
-let degree=arr[Math.floor(Math.random()*arr.length)];
-document.getElementById("question").textContent=degree+"° hangi açı türüdür?";
-}
-function answer(choice){
-if(locked)return;
-if(choice===correct){
-locked=true;
-score+=10;
-document.getElementById("score").textContent="⭐ Puan: "+score;
-document.getElementById("message").textContent="✅ Harika! Hugo ilerliyor!";
-let x=[-105,0,105][choice];
-document.getElementById("train").style.transform="translate("+x+"px,180px)";
-timer=setTimeout(newQuestion,1400);
-}else{
-document.getElementById("message").textContent="❌ Tekrar dene!";
-}
-}
-newQuestion();
-</script>
-</body>
-</html>
-  
+<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hugo Matematik Treni</title><style>*{box-sizing:border-box}body{margin:0;background:#13233b;color:white;text-align:center;font-family:Arial,sans-serif}h2{margin:12px 0}canvas{display:block;width:96%;max-width:480px;margin:auto;border:3px solid #fff;border-radius:14px;touch-action:manipulation}#q{font-size:21px;font-weight:bold;margin:12px}#buttons{display:flex;justify-content:center;gap:8px;margin:10px}button{border:0;border-radius:12px;background:#ffdb4a;padding:14px 9px;font-weight:bold;font-size:15px;flex:1;max-width:155px}#msg{min-height:28px;font-weight:bold}</style></head><body><h2>🚂 HUGO MATEMATİK TRENİ</h2><p>⭐ Puan: <span id="score">0</span> · 🏆 Seviye: <span id="level">1</span></p><canvas id="game" width="390" height="440"></canvas><div id="q"></div><div id="buttons"><button onclick="choose(0)">SOL RAY</button><button onclick="choose(1)">ORTA RAY</button><button onclick="choose(2)">SAĞ RAY</button></div><div id="msg"></div><script>
+const canvas=document.getElementById('game'),g=canvas.getContext('2d'),names=['DAR AÇI','DİK AÇI','GENİŞ AÇI'],degrees=[40,90,135],ends=[65,195,325];let order=[0,1,2],answer=0,score=0,moving=false,progress=0,selected=1,phase=0;
+function next(){order=[0,1,2];for(let i=2;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}answer=Math.floor(Math.random()*3);document.getElementById('q').textContent='📐 '+names[answer]+' olan rayı seç!';document.getElementById('msg').textContent=''}
+function line(x,y,X,Y,color,w){g.beginPath();g.moveTo(x,y);g.lineTo(X,Y);g.strokeStyle=color;g.lineWidth=w;g.stroke()}
+function drawAngle(cx,cy,d){const r=d*Math.PI/180;line(cx-13,cy+5,cx+13,cy+5,'#fff',3);line(cx-13,cy+5,cx-13+26*Math.cos(-r),cy+5+26*Math.sin(-r),'#fff',3);g.fillStyle='#ffe45c';g.font='bold 15px Arial';g.textAlign='center';g.fillText(d+'°',cx,cy+29)}
+function draw(){phase+=.015;g.fillStyle='#8cd4ff';g.fillRect(0,0,390,440);g.fillStyle='#65b65a';g.fillRect(0,125,390,315);g.fillStyle='#f8e8a1';g.beginPath();g.arc(340,35,19,0,7);g.fill();for(let i=0;i<3;i++){let end=ends[i];line(195,430,end,126,'#674c38',31);line(183,430,end-12,126,'#d9dce0',4);line(207,430,end+12,126,'#d9dce0',4);for(let j=1;j<12;j++){let t=j/12,px=195+(end-195)*t,py=430-304*t;line(px-14,py,px+14,py,'#a8794c',4)}g.fillStyle='#253a58';g.fillRect(end-48,48,96,71);g.fillStyle='white';g.textAlign='center';g.font='bold 13px Arial';g.fillText(names[order[i]],end,66);drawAngle(end,86,degrees[order[i]])}let t=moving?progress:0,tx=195+(ends[selected]-195)*t,ty=351-205*t+Math.sin(phase*4)*1.5;g.save();g.translate(tx,ty);g.fillStyle='#202632';g.fillRect(-29,-29,12,21);g.fillRect(17,-29,12,21);g.fillRect(-29,14,12,21);g.fillRect(17,14,12,21);g.fillStyle='#e8404c';g.fillRect(-24,-33,48,67);g.fillStyle='#ffdb4a';g.fillRect(-19,-28,38,21);g.fillStyle='#3499e0';g.fillRect(-19,1,38,23);g.fillStyle='white';g.font='bold 13px Arial';g.textAlign='center';g.fillText('HUGO',0,17);g.restore();if(moving){progress+=.018;if(progress>=1){moving=false;progress=0;score+=10;document.getElementById('score').textContent=score;document.getElementById('level').textContent=1+Math.floor(score/50);next()}}requestAnimationFrame(draw)}
+function choose(i){if(moving)return;if(order[i]===answer){selected=i;progress=0;moving=true;document.getElementById('msg').textContent='✅ Doğru! Tren ilerliyor!'}else document.getElementById('msg').textContent='❌ Yanlış ray, tekrar dene!'}
+next();draw();
+</script></body></html>
