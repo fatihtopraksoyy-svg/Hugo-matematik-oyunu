@@ -1,14 +1,153 @@
 
-"❌ Yanlış cevap, tekrar dene!";
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hugo Matematik Oyunu</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#a7f3d0,#bfdbfe);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
+.oyun {
+  background: white;
+  padding: 28px 20px;
+  border-radius: 24px;
+  width: 92%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px #0002;
 }
-function nextQuestion(){
-clearTimeout(timer);
-index++;
-showQuestion();
+h1 { color: #16856a; }
+.soru {
+  font-size: 38px;
+  font-weight: bold;
+  margin: 25px 0;
 }
-shuffle();
-showQuestion();
+button {
+  border: none;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 22px;
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+}
+.secenekler {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+button:disabled { opacity: .55; }
+#mesaj {
+  min-height: 35px;
+  font-size: 20px;
+  font-weight: bold;
+}
+.puan { font-size: 20px; }
+</style>
+</head>
+<body>
+<div class="oyun">
+  <h1>🧠 Hugo Matematik Oyunu</h1>
+  <p>Doğru cevabı bul, puanları topla!</p>
+  <div class="puan">
+    ⭐ Puan: <span id="puan">0</span>
+  </div>
+  <div id="soru" class="soru"></div>
+  <div id="secenekler" class="secenekler"></div>
+  <p id="mesaj" aria-live="polite"></p>
+</div>
+
+<script>
+let puan = 0;
+let dogruCevap = 0;
+let kilitli = false;
+let zamanlayici = null;
+
+function rastgele(min, max) {
+  return Math.floor(Math.random() * (max-min+1))+min;
+}
+
+function yeniSoru() {
+  clearTimeout(zamanlayici);
+  kilitli = false;
+
+  let a = rastgele(1, 20);
+  let b = rastgele(1, 20);
+  let islem = rastgele(0, 2);
+  let sembol = "+";
+
+  if (islem === 0) {
+    dogruCevap = a + b;
+  } else if (islem === 1) {
+    if (b > a) [a, b] = [b, a];
+    dogruCevap = a - b;
+    sembol = "-";
+  } else {
+    a = rastgele(1, 10);
+    b = rastgele(1, 10);
+    dogruCevap = a * b;
+    sembol = "×";
+  }
+
+  document.getElementById("soru").textContent =
+    a + " " + sembol + " " + b + " = ?";
+
+  document.getElementById("mesaj").textContent = "";
+
+  let cevaplar = new Set([dogruCevap]);
+  while (cevaplar.size < 4) {
+    let yanlis = dogruCevap + rastgele(-10, 10);
+    if (yanlis >= 0) cevaplar.add(yanlis);
+  }
+
+  let karisik = [...cevaplar].sort(
+    () => Math.random() - 0.5
+  );
+
+  let alan = document.getElementById("secenekler");
+  alan.innerHTML = "";
+
+  karisik.forEach(cevap => {
+    let buton = document.createElement("button");
+    buton.textContent = cevap;
+    buton.onclick = () => kontrolEt(cevap);
+    alan.appendChild(buton);
+  });
+}
+
+function kontrolEt(cevap) {
+  if (kilitli) return;
+
+  let mesaj = document.getElementById("mesaj");
+
+  if (cevap === dogruCevap) {
+    kilitli = true;
+    puan += 10;
+    document.getElementById("puan").textContent = puan;
+    mesaj.textContent = "🎉 Bravo! Doğru cevap!";
+    mesaj.style.color = "green";
+
+    document.querySelectorAll(
+      "#secenekler button"
+    ).forEach(buton => buton.disabled = true);
+
+    zamanlayici = setTimeout(yeniSoru, 1000);
+  } else {
+    mesaj.textContent = "😊 Tekrar dene!";
+    mesaj.style.color = "red";
+  }
+}
+
+yeniSoru();
 </script>
 </body>
 </html>
